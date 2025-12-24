@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Roles {
+  id    Int    @id @default(autoincrement())
+  name  String
+  users User[]
+}
+
+model User {
+  id       Int     @id @default(autoincrement())
+  username String
+  password String
+  email    String
+  roleId   Int     @map("role_id")
+  picture  String?
+  publicId String? @map("public_id")
+
+  roles  Roles    @relation(fields: [roleId], references: [id])
+  orders Orders[]
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  PAYMENT_FAILED
+  REFUNDED
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  COMPLETED
+  CANCELLED
+  REFUNDED
+}
+
+model Orders {
+  id            Int           @id @default(autoincrement())
+  totalPrice    Int           @map("total_price")
+  userId        Int           @map("user_id")
+  paymentStatus PaymentStatus @default(PENDING) @map("payment_status")
+  orderStatus   OrderStatus   @default(PENDING_PAYMENT) @map("order_status")
+  createdAt     DateTime      @default(now()) @map("create_at") @db.Timestamp(0)
+  editedAt      DateTime?     @updatedAt @map("edited_at") @db.Timestamp(0)
+
+  user       User          @relation(fields: [userId], references: [id])
+  orderItems Order_items[]
+}
+
+model Categories {
+  id   Int
+  name String @id
+
+  products Products[]
+}
+
+model Products {
+  id           Int      @id @default(autoincrement())
+  name         String
+  price        String   @default("0")
+  categoryName String?  @map("category_name")
+  imageUrl     String?  @map("image_url")
+  publicId     String?  @map("public_id")
+  description  String?
+  createAt     DateTime @default(now()) @map("create_at")
+  editedAt     DateTime @updatedAt @map("edite_at")
+  quantity     String?
+  number       String?
+
+  categories Categories? @relation(fields: [categoryName], references: [name])
+
+  orderItems Order_items[]
+}
+
+model Order_items {
+  id        Int @id @default(autoincrement())
+  orderId   Int @map("order_id")
+  productId Int @map("product_id")
+  amount    Int
+  price     Int @default(0)
+
+  order   Orders   @relation(fields: [orderId], references: [id])
+  product Products @relation(fields: [productId], references: [id])
+}
