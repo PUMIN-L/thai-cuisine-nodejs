@@ -79,10 +79,6 @@ authController.getMe = async (req, res, next) => {
 authController.updateProfileImage = async (req, res, next) => {
 
     try {
-        console.log('test')
-        console.log("CLOUDINARY_SECRET =", process.env.CLOUDINALY_API_SECRET);
-        console.log("api_key =", process.env.CLOUDINALY_API_KEY);
-        console.log("cloud_name =", process.env.CLOUDINALY_NAME);
         const user = await userService.findUserById(req.user.id)
 
         if (user.publicId) {
