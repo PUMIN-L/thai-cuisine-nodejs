@@ -9,7 +9,8 @@ exports.createOrderSchema = Joi.object({
         .message({ 'string.empty': 'Payment status is require' }),
 
     totalPrice: Joi.number().required(),
-    userId: Joi.number()
+    userId: Joi.number(),
+    orderNumber: Joi.string()
 
 })
 

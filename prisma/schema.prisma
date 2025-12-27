@@ -51,6 +51,7 @@ model Orders {
   orderStatus   OrderStatus   @default(PENDING_PAYMENT) @map("order_status")
   createdAt     DateTime      @default(now()) @map("create_at") @db.Timestamp(0)
   editedAt      DateTime?     @updatedAt @map("edited_at") @db.Timestamp(0)
+  orderNumber   String        @default("UNKNOWN") @map("order-number")
 
   user       User          @relation(fields: [userId], references: [id])
   orderItems Order_items[]

@@ -1,13 +1,26 @@
 const orderService = require("../services/order-service")
 const orderItemService = require("../services/orderItem-service")
 const createError2 = require("../utils/create-error2")
+const crypto = require('crypto');
 
 const orderController = {}
 
+function generateOrderId(length = 6) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    const bytes = crypto.randomBytes(length);
+    return Array.from(bytes, b => chars[b % chars.length]).join('');
+}
+
 orderController.create = async (req, res, next) => {
     try {
+
+        const randomOrderNumber = generateOrderId()
+
+        req.input.orderNumber = `${req.user.username.slice(0, 2).toUpperCase()}${randomOrderNumber}`
+
         const order = await orderService.createOrder(req.input)
         res.status(200).json(order)
+
 
     } catch (error) {
         next(error)
